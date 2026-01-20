@@ -1,8 +1,8 @@
 package com.concesionario.autos_api.controller;
 
 import com.concesionario.autos_api.model.Auto;
-import com.concesionario.autos_api.repository.AutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.concesionario.autos_api.service.AutoService;
+import jakarta.validation.Valid; 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,48 +12,52 @@ import java.util.List;
 @RequestMapping("/api/autos")
 public class AutoController {
 
-    @Autowired
-    private AutoRepository autoRepository;
+    
+    private final AutoService autoService;
+
+    public AutoController(AutoService autoService) {
+        this.autoService = autoService;
+    }
 
     // 1. OBTENER TODOS
     @GetMapping
     public List<Auto> listarAutos() {
-        return autoRepository.findAll();
+        return autoService.listarTodos();
     }
 
-    // 2. GUARDAR NUEVO
+    // 2. GUARDAR NUEVO 
     @PostMapping
-    public Auto guardarAuto(@RequestBody Auto auto) {
-        if(auto.isDisponible() == null) {
-            auto.setDisponible(true); // Por defecto disponible
+    public ResponseEntity<Auto> guardarAuto(@Valid @RequestBody Auto auto) {
+        
+        if(auto.getDisponible() == null) {
+            auto.setDisponible(true);
         }
-        return autoRepository.save(auto);
+        return ResponseEntity.ok(autoService.guardarAuto(auto));
     }
 
-    // 3. ACTUALIZAR (Sirve para Editar datos y para COMPRAR/Cambiar estado)
+    // 3. ACTUALIZAR
     @PutMapping("/{id}")
-    public ResponseEntity<Auto> actualizarAuto(@PathVariable Long id, @RequestBody Auto autoDetalles) {
-        return autoRepository.findById(id)
+    public ResponseEntity<Auto> actualizarAuto(@PathVariable Long id, @Valid @RequestBody Auto autoDetalles) {
+        return autoService.obtenerPorId(id)
                 .map(auto -> {
-                    // Actualizamos datos básicos
                     auto.setPlaca(autoDetalles.getPlaca());
                     auto.setMarca(autoDetalles.getMarca());
                     auto.setModelo(autoDetalles.getModelo());
                     auto.setPrecio(autoDetalles.getPrecio());
 
-                    // Actualizamos el estado (Importante para la compra)
-                    if(autoDetalles.isDisponible() != null) {
-                        auto.setDisponible(autoDetalles.isDisponible());
+                    if(autoDetalles.getDisponible() != null) {
+                        auto.setDisponible(autoDetalles.getDisponible());
                     }
 
-                    return ResponseEntity.ok(autoRepository.save(auto));
+                    return ResponseEntity.ok(autoService.guardarAuto(auto));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // 4. ELIMINAR
     @DeleteMapping("/{id}")
-    public void eliminarAuto(@PathVariable Long id) {
-        autoRepository.deleteById(id);
+    public ResponseEntity<Void> eliminarAuto(@PathVariable Long id) {
+        autoService.eliminarAuto(id);
+        return ResponseEntity.noContent().build();
     }
 }
