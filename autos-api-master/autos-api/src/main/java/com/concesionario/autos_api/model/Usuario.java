@@ -1,7 +1,7 @@
 package com.concesionario.autos_api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Data; // Esto crea automáticamente los Getters y Setters (incluido setSaldo)
 
 @Data
 @Entity
@@ -17,6 +17,8 @@ public class Usuario {
     private String email;
 
     private String password;
+
+    private Double saldo = 0.0;
 
     @ManyToOne
     @JoinColumn(name = "rol_id")

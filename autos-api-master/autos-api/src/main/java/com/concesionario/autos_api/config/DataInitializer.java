@@ -1,5 +1,6 @@
 package com.concesionario.autos_api.config;
 
+// 👇 ESTOS IMPORTS SON LOS QUE TE FALTABAN O ESTABAN FALLANDO
 import com.concesionario.autos_api.model.Auto;
 import com.concesionario.autos_api.model.Rol;
 import com.concesionario.autos_api.model.Usuario;
@@ -9,8 +10,6 @@ import com.concesionario.autos_api.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Optional;
 
 @Configuration
 public class DataInitializer {
@@ -24,34 +23,39 @@ public class DataInitializer {
             Rol rolAdmin = crearRolSiNoExiste(rolRepo, "ADMINISTRADOR");
             Rol rolCliente = crearRolSiNoExiste(rolRepo, "CLIENTE");
 
-            // 2. Crear Usuario Admin
+            // 2. Crear Admin (Sin dinero, solo gestiona)
             if (usuarioRepo.findByEmail("admin@autos.com").isEmpty()) {
                 Usuario admin = new Usuario();
                 admin.setNombreCompleto("Admin Principal");
                 admin.setEmail("admin@autos.com");
                 admin.setPassword("admin123");
                 admin.setRol(rolAdmin);
+                admin.setSaldo(0.0);
                 usuarioRepo.save(admin);
-                System.out.println("✅ ADMIN CREADO: admin@autos.com / admin123");
+                System.out.println("✅ ADMIN CREADO");
             }
 
-            // 3. Crear Usuario Cliente de prueba
+            // 3. Crear Cliente Millonario de prueba ($60,000)
             if (usuarioRepo.findByEmail("cliente@autos.com").isEmpty()) {
                 Usuario cliente = new Usuario();
-                cliente.setNombreCompleto("Cliente Prueba");
+                cliente.setNombreCompleto("Cliente Millonario");
                 cliente.setEmail("cliente@autos.com");
                 cliente.setPassword("1234");
                 cliente.setRol(rolCliente);
+                cliente.setSaldo(60000.0); // Billetera cargada
                 usuarioRepo.save(cliente);
-                System.out.println("✅ CLIENTE CREADO: cliente@autos.com / 1234");
+                System.out.println("✅ CLIENTE CREADO CON SALDO");
             }
 
-            // 4. PRECARGA DE AUTOS (Para que la lista no salga vacía al inicio)
+            // 4. Crear Autos de Prueba (Con constructor lleno)
             if (autoRepo.count() == 0) {
-                autoRepo.save(new Auto(null, "PBA-1234", "Toyota", "Corolla", 25000.0, true));
-                autoRepo.save(new Auto(null, "GCA-5678", "Chevrolet", "Sail", 14500.0, true));
-                autoRepo.save(new Auto(null, "UIO-9090", "Mazda", "CX-5", 32000.0, true));
-                System.out.println("✅ 3 AUTOS DE PRUEBA CREADOS");
+                // Toyota (Alcanzable)
+                autoRepo.save(new Auto(null, "PBA-1234", "Toyota", "Corolla", 25000.0, true, "https://acroadtrip.blob.core.windows.net/catalogo-imagenes/m/RT_V_0aa034070a2d488e89542714c330df32.jpg"));
+
+                // Mercedes (Muy caro para el cliente de prueba)
+                autoRepo.save(new Auto(null, "UIO-9090", "Mercedes", "Benz", 85000.0, true, "https://acroadtrip.blob.core.windows.net/catalogo-imagenes/m/RT_V_9c71618751534b72960f473c40156994.jpg"));
+
+                System.out.println("✅ AUTOS DE PRUEBA CREADOS");
             }
         };
     }

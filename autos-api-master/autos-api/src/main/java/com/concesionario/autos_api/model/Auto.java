@@ -1,4 +1,4 @@
-package com.concesionario.autos_api.model;
+package com.concesionario.autos_api.model; // 👈 ESTA LÍNEA ES VITAL
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -18,7 +18,7 @@ public class Auto {
     private Long id;
 
     @NotBlank(message = "La placa es obligatoria")
-    @Pattern(regexp = "^[A-Z]{3}-\\d{3,4}$", message = "La placa debe tener formato AAA-1234")
+    @Pattern(regexp = "^[A-Z]{3}-\\d{3,4}$", message = "Formato inválido (Ej: AAA-1234)")
     @Column(unique = true)
     private String placa;
 
@@ -29,9 +29,12 @@ public class Auto {
     private String modelo;
 
     @NotNull(message = "El precio es obligatorio")
-    @Min(value = 500, message = "El precio debe ser mayor a 500")
+    @Min(value = 500, message = "El precio mínimo es $500")
     private Double precio;
 
-    // Campo para saber si está vendido o no
     private Boolean disponible = true;
+
+    // Campo de imagen (si te faltaba este, el DataInitializer fallaba)
+    @Column(length = 500)
+    private String imagenUrl;
 }
