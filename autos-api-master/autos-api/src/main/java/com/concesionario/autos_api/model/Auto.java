@@ -35,6 +35,6 @@ public class Auto {
     private Boolean disponible = true;
 
     // Campo de imagen (si te faltaba este, el DataInitializer fallaba)
-    @Column(length = 500)
+    @Column(length = 2048)
     private String imagenUrl;
 }
