@@ -43,7 +43,7 @@ public class AutoService {
         autoRepository.deleteById(id);
     }
 
-    // --- NUEVA LÓGICA DE COMPRA SEGURA ---
+    // logica de compra
     public void procesarCompra(Long idAuto, String emailCliente) {
         // 1. Buscar Auto
         Auto auto = autoRepository.findById(idAuto)
@@ -57,7 +57,7 @@ public class AutoService {
         Usuario cliente = usuarioRepository.findByEmail(emailCliente)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado"));
 
-        // 3. VERIFICAR DINERO (LA LÓGICA CLAVE)
+        // 3. VERIFICAR DINERO
         if (cliente.getSaldo() < auto.getPrecio()) {
             throw new IllegalArgumentException("Saldo insuficiente. Tienes $" + cliente.getSaldo() +
                     " pero el auto cuesta $" + auto.getPrecio());

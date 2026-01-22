@@ -14,7 +14,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 1. Error cuando no se encuentra un Auto (404)
+    // error cuando no se encuentra un Auto (404)
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> manejarRecursoNoEncontrado(ResourceNotFoundException ex, WebRequest request) {
         Map<String, Object> respuesta = new HashMap<>();
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(respuesta, HttpStatus.NOT_FOUND);
     }
 
-    // 2. Error cuando fallan las validaciones (@NotBlank, @Min, etc.) (400)
+    // Error cuando fallan las validaciones
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> manejarValidaciones(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new HashMap<>();
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errores, HttpStatus.BAD_REQUEST);
     }
 
-    // 3. Error General (500)
+    // Error General (500)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> manejarErroresGlobales(Exception ex, WebRequest request) {
         Map<String, Object> respuesta = new HashMap<>();

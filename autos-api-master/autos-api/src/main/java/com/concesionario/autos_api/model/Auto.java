@@ -1,4 +1,4 @@
-package com.concesionario.autos_api.model; // 👈 ESTA LÍNEA ES VITAL
+package com.concesionario.autos_api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -34,7 +34,7 @@ public class Auto {
 
     private Boolean disponible = true;
 
-    // Campo de imagen (si te faltaba este, el DataInitializer fallaba)
-    @Column(length = 2048)
+
+    @Column(columnDefinition = "TEXT")
     private String imagenUrl;
 }

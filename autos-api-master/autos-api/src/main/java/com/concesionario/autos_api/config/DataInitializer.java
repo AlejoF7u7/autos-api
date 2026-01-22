@@ -23,7 +23,7 @@ public class DataInitializer {
             Rol rolAdmin = crearRolSiNoExiste(rolRepo, "ADMINISTRADOR");
             Rol rolCliente = crearRolSiNoExiste(rolRepo, "CLIENTE");
 
-            // 2. Crear Admin (Sin dinero, solo gestiona)
+            // 2. Crear Admin
             if (usuarioRepo.findByEmail("admin@autos.com").isEmpty()) {
                 Usuario admin = new Usuario();
                 admin.setNombreCompleto("Admin Principal");
@@ -35,7 +35,7 @@ public class DataInitializer {
                 System.out.println("✅ ADMIN CREADO");
             }
 
-            // 3. Crear Cliente Millonario de prueba ($60,000)
+
             if (usuarioRepo.findByEmail("cliente@autos.com").isEmpty()) {
                 Usuario cliente = new Usuario();
                 cliente.setNombreCompleto("Cliente Millonario");
@@ -55,7 +55,7 @@ public class DataInitializer {
                 // Mercedes (Muy caro para el cliente de prueba)
                 autoRepo.save(new Auto(null, "UIO-9090", "Mercedes", "Benz", 85000.0, true, "https://acroadtrip.blob.core.windows.net/catalogo-imagenes/m/RT_V_9c71618751534b72960f473c40156994.jpg"));
 
-                System.out.println("✅ AUTOS DE PRUEBA CREADOS");
+                System.out.println(" AUTOS DE PRUEBA CREADOS");
             }
         };
     }

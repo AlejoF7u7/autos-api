@@ -14,7 +14,7 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Método para el Login
+
     public Optional<Usuario> login(String email, String password) {
         Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
         if (usuario.isPresent() && usuario.get().getPassword().equals(password)) {

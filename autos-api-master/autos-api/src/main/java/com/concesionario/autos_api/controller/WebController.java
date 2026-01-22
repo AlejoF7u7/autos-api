@@ -74,16 +74,16 @@ public class WebController {
         return "redirect:/login";
     }
 
-    // --- LISTA CON SALDO VISIBLE ---
+
     @GetMapping("/web/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
                                  @SessionAttribute(name = "usuarioSesion", required = false) Usuario usuario,
                                  Model model) {
-        if (usuario == null) return "redirect:/login"; // Seguridad simple
+        if (usuario == null) return "redirect:/login";
 
         // Refrescamos el usuario desde la BD para ver el saldo actualizado
         Usuario usuarioActualizado = usuarioRepository.findById(usuario.getId()).get();
-        model.addAttribute("usuarioSesion", usuarioActualizado); // Actualizamos la sesión
+        model.addAttribute("usuarioSesion", usuarioActualizado);
 
         if (busqueda != null && !busqueda.isEmpty()) {
             model.addAttribute("listaAutos", autoService.buscarPorPalabra(busqueda));
@@ -130,13 +130,13 @@ public class WebController {
         return "redirect:/web/autos";
     }
 
-    // --- COMPRA SEGURA CON VALIDACIÓN DE SALDO ---
+
     @GetMapping("/web/autos/comprar/{id}")
     public String comprarAutoWeb(@PathVariable Long id,
                                  @SessionAttribute("usuarioSesion") Usuario usuario,
                                  RedirectAttributes atributos) {
         try {
-            // Llamamos a la nueva lógica que revisa el dinero
+
             autoService.procesarCompra(id, usuario.getEmail());
             atributos.addFlashAttribute("exito", "¡Compra exitosa! Disfruta tu auto nuevo.");
         } catch (Exception e) {
