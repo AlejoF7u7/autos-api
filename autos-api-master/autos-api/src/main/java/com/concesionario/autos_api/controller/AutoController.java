@@ -34,14 +34,14 @@ public class AutoController {
         return ResponseEntity.ok(auto);
     }
 
-    // 3. CREAR NUEVO (POST /api/autos)
-    @PostMapping
+    // 3. CREAR NUEVO (POST /api/autos/Crear)
+    @PostMapping("/crear")
     public ResponseEntity<Auto> guardarAuto(@Valid @RequestBody Auto auto) {
         if (auto.getDisponible() == null) {
             auto.setDisponible(true);
         }
         Auto nuevoAuto = autoService.guardarAuto(auto);
-        // Devolvemos código 201 (Created) como pide la rúbrica
+
         return new ResponseEntity<>(nuevoAuto, HttpStatus.CREATED);
     }
 
