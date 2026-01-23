@@ -35,6 +35,6 @@ public class Auto {
     private Boolean disponible = true;
 
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 5000)
     private String imagenUrl;
 }
