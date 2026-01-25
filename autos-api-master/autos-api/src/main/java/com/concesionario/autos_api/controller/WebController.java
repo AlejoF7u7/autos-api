@@ -30,8 +30,6 @@ public class WebController {
         this.usuarioRepository = usuarioRepository;
     }
 
-
-
     @GetMapping("/")
     public String inicio() { return "redirect:/login"; }
 
@@ -68,8 +66,6 @@ public class WebController {
         return "redirect:/login";
     }
 
-
-
     @GetMapping("/web/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
                                  @SessionAttribute(name = "usuarioSesion", required = false) Usuario usuario,
@@ -77,15 +73,11 @@ public class WebController {
 
         if (usuario == null) return "redirect:/login";
 
-
-
         Optional<Usuario> usuarioDb = usuarioRepository.findById(usuario.getId());
 
         if (usuarioDb.isEmpty()) {
-
             return "redirect:/login";
         }
-
 
         Usuario usuarioActualizado = usuarioDb.get();
         model.addAttribute("usuarioSesion", usuarioActualizado);
@@ -99,13 +91,11 @@ public class WebController {
         return "lista-autos";
     }
 
-
     @GetMapping("/web/autos/nuevo")
     public String crearAuto(Model model) {
         model.addAttribute("auto", new Auto());
         return "formulario-auto";
     }
-
 
     @GetMapping("/web/autos/editar/{id}")
     public String editarAuto(@PathVariable Long id, Model model) {
@@ -116,7 +106,6 @@ public class WebController {
         }
         return "redirect:/web/autos";
     }
-
 
     @PostMapping("/web/autos/guardar")
     public String guardarAutoWeb(@Valid @ModelAttribute Auto auto, BindingResult result, Model model) {
@@ -131,13 +120,11 @@ public class WebController {
         return "redirect:/web/autos";
     }
 
-
     @DeleteMapping("/web/autos/eliminar/{id}")
     public String eliminarAutoWeb(@PathVariable Long id) {
         autoService.eliminarAuto(id);
         return "redirect:/web/autos";
     }
-
 
     @PatchMapping("/web/autos/comprar/{id}")
     public String comprarAutoWeb(@PathVariable Long id,

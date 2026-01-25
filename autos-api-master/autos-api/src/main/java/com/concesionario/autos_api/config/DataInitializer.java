@@ -1,6 +1,5 @@
 package com.concesionario.autos_api.config;
 
-// 👇 ESTOS IMPORTS SON LOS QUE TE FALTABAN O ESTABAN FALLANDO
 import com.concesionario.autos_api.model.Auto;
 import com.concesionario.autos_api.model.Rol;
 import com.concesionario.autos_api.model.Usuario;
@@ -19,11 +18,10 @@ public class DataInitializer {
                                    UsuarioRepository usuarioRepo,
                                    AutoRepository autoRepo) {
         return args -> {
-            // 1. Crear Roles
-            Rol rolAdmin = crearRolSiNoExiste(rolRepo, "ADMINISTRADOR");
+
+            Rol rolAdmin = crearRolSiNoExiste(rolRepo, "ADMIN");
             Rol rolCliente = crearRolSiNoExiste(rolRepo, "CLIENTE");
 
-            // 2. Crear Admin
             if (usuarioRepo.findByEmail("admin@autos.com").isEmpty()) {
                 Usuario admin = new Usuario();
                 admin.setNombreCompleto("Admin Principal");
@@ -32,9 +30,7 @@ public class DataInitializer {
                 admin.setRol(rolAdmin);
                 admin.setSaldo(0.0);
                 usuarioRepo.save(admin);
-                System.out.println("✅ ADMIN CREADO");
             }
-
 
             if (usuarioRepo.findByEmail("cliente@autos.com").isEmpty()) {
                 Usuario cliente = new Usuario();
@@ -42,20 +38,13 @@ public class DataInitializer {
                 cliente.setEmail("cliente@autos.com");
                 cliente.setPassword("1234");
                 cliente.setRol(rolCliente);
-                cliente.setSaldo(60000.0); // Billetera cargada
+                cliente.setSaldo(60000.0);
                 usuarioRepo.save(cliente);
-                System.out.println("✅ CLIENTE CREADO CON SALDO");
             }
 
-            // 4. Crear Autos de Prueba (Con constructor lleno)
             if (autoRepo.count() == 0) {
-                // Toyota (Alcanzable)
-                autoRepo.save(new Auto(null, "PBA-1234", "Toyota", "Corolla", 25000.0, true, "https://acroadtrip.blob.core.windows.net/catalogo-imagenes/m/RT_V_0aa034070a2d488e89542714c330df32.jpg"));
-
-                // Mercedes (Muy caro para el cliente de prueba)
-                autoRepo.save(new Auto(null, "UIO-9090", "Mercedes", "Benz", 85000.0, true, "https://acroadtrip.blob.core.windows.net/catalogo-imagenes/m/RT_V_9c71618751534b72960f473c40156994.jpg"));
-
-                System.out.println(" AUTOS DE PRUEBA CREADOS");
+                autoRepo.save(new Auto(null, "PBA-1234", "Toyota", "Corolla", 25000.0, true, "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/F40_ferrari_20090509.jpg/800px-F40_ferrari_20090509.jpg"));
+                autoRepo.save(new Auto(null, "UIO-9090", "Mercedes", "Benz", 85000.0, true, "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/2018_Mercedes-Benz_A200_AMG_Line_Premium_Automatic_1.3.jpg/800px-2018_Mercedes-Benz_A200_AMG_Line_Premium_Automatic_1.3.jpg"));
             }
         };
     }
