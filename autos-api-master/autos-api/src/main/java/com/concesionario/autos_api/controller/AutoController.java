@@ -20,13 +20,13 @@ public class AutoController {
         this.autoService = autoService;
     }
 
-    // 1. LISTAR TODOS (GET /api/autos)
+    // LISTAR TODOS (GET /api/autos)
     @GetMapping
     public List<Auto> listarAutos() {
         return autoService.listarTodos();
     }
 
-    // 2. OBTENER POR ID (GET /api/autos/{id}) -> ¡Este te faltaba!
+
     @GetMapping("/{id}")
     public ResponseEntity<Auto> obtenerAutoPorId(@PathVariable Long id) {
         Auto auto = autoService.obtenerPorId(id)
@@ -34,7 +34,7 @@ public class AutoController {
         return ResponseEntity.ok(auto);
     }
 
-    // 3. CREAR NUEVO (POST /api/autos/Crear)
+
     @PostMapping("/crear")
     public ResponseEntity<Auto> guardarAuto(@Valid @RequestBody Auto auto) {
         if (auto.getDisponible() == null) {
@@ -45,7 +45,7 @@ public class AutoController {
         return new ResponseEntity<>(nuevoAuto, HttpStatus.CREATED);
     }
 
-    // 4. ACTUALIZAR (PUT /api/autos/{id})
+    // ACTUALIZAR (PUT /api/autos/{id})
     @PutMapping("/{id}")
     public ResponseEntity<Auto> actualizarAuto(@PathVariable Long id, @Valid @RequestBody Auto autoDetalles) {
         Auto autoExistente = autoService.obtenerPorId(id)
@@ -64,7 +64,7 @@ public class AutoController {
         return ResponseEntity.ok(autoActualizado);
     }
 
-    // 5. ELIMINAR (DELETE /api/autos/{id})
+    // (DELETE /api/autos/{id})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarAuto(@PathVariable Long id) {
         Auto auto = autoService.obtenerPorId(id)

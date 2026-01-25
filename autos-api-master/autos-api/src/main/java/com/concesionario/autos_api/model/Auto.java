@@ -1,4 +1,4 @@
-package com.concesionario.autos_api.model; // 👈 ESTA LÍNEA ES VITAL
+package com.concesionario.autos_api.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
