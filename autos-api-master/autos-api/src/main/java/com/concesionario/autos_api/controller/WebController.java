@@ -41,7 +41,6 @@ public class WebController {
         Optional<Usuario> usuario = usuarioService.login(email, password);
         if (usuario.isPresent()) {
             model.addAttribute("usuarioSesion", usuario.get());
-            // CORREGIDO: Redirige a /autos (sin /web)
             return "redirect:/autos";
         } else {
             atributos.addFlashAttribute("error", "Credenciales incorrectas");
@@ -67,7 +66,7 @@ public class WebController {
         return "redirect:/login";
     }
 
-    // --- RUTAS LIMPIAS (SIN /WEB) ---
+    // --- RUTAS PROTEGIDAS Y LIMPIAS ---
 
     @GetMapping("/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
@@ -80,6 +79,13 @@ public class WebController {
         if (usuarioDb.isEmpty()) return "redirect:/login";
 
         Usuario usuarioActualizado = usuarioDb.get();
+
+        // 🚨 CINTURÓN DE SEGURIDAD ANT-ERROR 500 🚨
+        // Si por alguna razón el usuario en BD no tiene rol, lo sacamos para evitar la pantalla blanca
+        if (usuarioActualizado.getRol() == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("usuarioSesion", usuarioActualizado);
 
         if (busqueda != null && !busqueda.isEmpty()) {
@@ -117,14 +123,12 @@ public class WebController {
             model.addAttribute("errorNegocio", e.getMessage());
             return "formulario-auto";
         }
-        // CORREGIDO: Redirige a /autos
         return "redirect:/autos";
     }
 
     @DeleteMapping("/autos/eliminar/{id}")
     public String eliminarAutoWeb(@PathVariable Long id) {
         autoService.eliminarAuto(id);
-        // CORREGIDO: Redirige a /autos
         return "redirect:/autos";
     }
 
@@ -138,7 +142,6 @@ public class WebController {
         } catch (Exception e) {
             atributos.addFlashAttribute("error", e.getMessage());
         }
-        // CORREGIDO: Redirige a /autos
         return "redirect:/autos";
     }
 }

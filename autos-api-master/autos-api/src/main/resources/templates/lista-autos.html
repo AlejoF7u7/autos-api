@@ -16,7 +16,6 @@
         <a class="navbar-brand text-white" href="#">🚗 Concesionario</a>
         <div class="d-flex align-items-center text-white">
             <span class="me-3">Hola, <b th:text="${usuarioSesion.nombre}">Usuario</b></span>
-
             <span class="badge bg-success me-3" th:text="'Saldo: $' + ${usuarioSesion.saldo}">$0.0</span>
 
             <span class="badge bg-info text-dark me-3"
@@ -94,9 +93,7 @@
                             </div>
 
                             <div th:if="${usuarioSesion.rol != null and usuarioSesion.rol.nombre == 'ADMINISTRADOR'}" class="d-flex gap-2">
-
                                 <a th:href="@{/autos/editar/{id}(id=${auto.id})}" class="btn btn-warning btn-sm">✏️</a>
-
                                 <form th:action="@{/autos/eliminar/{id}(id=${auto.id})}" method="post">
                                     <input type="hidden" name="_method" value="delete" />
                                     <button type="submit" class="btn btn-danger btn-sm"
