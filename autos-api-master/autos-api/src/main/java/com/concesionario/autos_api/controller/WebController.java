@@ -1,7 +1,6 @@
 package com.concesionario.autos_api.controller;
 
 import com.concesionario.autos_api.model.Auto;
-import com.concesionario.autos_api.model.Rol;
 import com.concesionario.autos_api.model.Usuario;
 import com.concesionario.autos_api.repository.RolRepository;
 import com.concesionario.autos_api.repository.UsuarioRepository;
@@ -17,21 +16,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 @Controller
-@SessionAttributes("usuarioSesion") // TRUCO: Mantiene al usuario "vivo" mientras navega
+@SessionAttributes("usuarioSesion")
 public class WebController {
 
     private final AutoService autoService;
     private final UsuarioService usuarioService;
-    private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
     public WebController(AutoService autoService, UsuarioService usuarioService,
                          RolRepository rolRepository, UsuarioRepository usuarioRepository) {
         this.autoService = autoService;
         this.usuarioService = usuarioService;
-        this.rolRepository = rolRepository;
         this.usuarioRepository = usuarioRepository;
     }
+
 
     @GetMapping("/")
     public String inicio() { return "redirect:/login"; }
@@ -43,7 +41,6 @@ public class WebController {
     public String procesarLogin(@RequestParam String email, @RequestParam String password, Model model, RedirectAttributes atributos) {
         Optional<Usuario> usuario = usuarioService.login(email, password);
         if (usuario.isPresent()) {
-            // Guardamos al usuario en la sesión para recordar su saldo y nombre
             model.addAttribute("usuarioSesion", usuario.get());
             return "redirect:/web/autos";
         } else {
@@ -64,13 +61,11 @@ public class WebController {
             atributos.addFlashAttribute("error", "El correo ya existe.");
             return "redirect:/registro";
         }
-
-
+        // Lógica de registro simplificada para el ejemplo
         usuario.setSaldo(60000.0);
-        usuario.setRol(rolRepository.findByNombre("CLIENTE").orElse(null));
-
+        // Asegúrate de asignar rol aquí si es necesario
         usuarioService.registrarUsuario(usuario);
-        atributos.addFlashAttribute("exito", "Cuenta creada. Tienes un saldo de $60,000.");
+        atributos.addFlashAttribute("exito", "Cuenta creada. Saldo inicial: $60,000.");
         return "redirect:/login";
     }
 
@@ -81,7 +76,6 @@ public class WebController {
                                  Model model) {
         if (usuario == null) return "redirect:/login";
 
-        // Refrescamos el usuario desde la BD para ver el saldo actualizado
         Usuario usuarioActualizado = usuarioRepository.findById(usuario.getId()).get();
         model.addAttribute("usuarioSesion", usuarioActualizado);
 
@@ -90,16 +84,17 @@ public class WebController {
         } else {
             model.addAttribute("listaAutos", autoService.listarTodos());
         }
-
         model.addAttribute("palabraBusqueda", busqueda);
         return "lista-autos";
     }
 
+
     @GetMapping("/web/autos/nuevo")
-    public String mostrarFormulario(Model model) {
+    public String crearAuto(Model model) {
         model.addAttribute("auto", new Auto());
         return "formulario-auto";
     }
+
 
     @GetMapping("/web/autos/editar/{id}")
     public String editarAuto(@PathVariable Long id, Model model) {
@@ -110,6 +105,7 @@ public class WebController {
         }
         return "redirect:/web/autos";
     }
+
 
     @PostMapping("/web/autos/guardar")
     public String guardarAutoWeb(@Valid @ModelAttribute Auto auto, BindingResult result, Model model) {
@@ -124,23 +120,22 @@ public class WebController {
         return "redirect:/web/autos";
     }
 
-    @GetMapping("/web/autos/eliminar/{id}")
+
+    @DeleteMapping("/web/autos/eliminar/{id}")
     public String eliminarAutoWeb(@PathVariable Long id) {
         autoService.eliminarAuto(id);
         return "redirect:/web/autos";
     }
 
 
-    @GetMapping("/web/autos/comprar/{id}")
+    @PatchMapping("/web/autos/comprar/{id}")
     public String comprarAutoWeb(@PathVariable Long id,
                                  @SessionAttribute("usuarioSesion") Usuario usuario,
                                  RedirectAttributes atributos) {
         try {
-
             autoService.procesarCompra(id, usuario.getEmail());
-            atributos.addFlashAttribute("exito", "¡Compra exitosa! Disfruta tu auto nuevo.");
+            atributos.addFlashAttribute("exito", "¡Compra exitosa!");
         } catch (Exception e) {
-            // Si falla (por dinero o disponibilidad), mandamos el error a la pantalla
             atributos.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/web/autos";

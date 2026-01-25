@@ -1,124 +1,129 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Inventario</title>
+    <meta charset="UTF-8">
+    <title>Catálogo de Autos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-            background-size: cover;
+        .auto-img {
+            width: 100px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
         }
-        .container-glass {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            margin-top: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .saldo-badge {
-            font-size: 1.2rem;
+        .navbar-custom {
             background-color: #2c3e50;
-            color: #f1c40f; /* Color dorado para el dinero */
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-<div class="container container-glass">
-
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <div>
-            <h1 class="mb-0">🚗 Concesionario</h1>
-            <small class="text-muted">Bienvenido, <span th:text="${session.usuarioSesion.nombreCompleto}">Usuario</span></small>
-        </div>
-        <div class="text-end">
-            <div class="mb-2">
-                <span class="saldo-badge">
-                    Saldo: $<span th:text="${session.usuarioSesion.saldo}">0.0</span>
-                </span>
-            </div>
-
-            <a th:if="${session.usuarioSesion.rol.nombre == 'ADMINISTRADOR'}" href="/web/autos/nuevo" class="btn btn-sm btn-success">+ Nuevo Auto</a>
-            <a href="/login" class="btn btn-sm btn-outline-danger ms-2">Cerrar Sesión</a>
+<nav class="navbar navbar-expand-lg navbar-custom mb-4">
+    <div class="container">
+        <a class="navbar-brand text-white" href="#">🚗 Concesionario</a>
+        <div class="d-flex align-items-center text-white">
+            <span class="me-3">Hola, <b th:text="${usuarioSesion.nombre}">Usuario</b></span>
+            <span class="badge bg-success me-3" th:text="'Saldo: $' + ${usuarioSesion.saldo}">$0.0</span>
+            <span class="badge bg-info text-dark me-3" th:text="${usuarioSesion.rol.nombre}">ROL</span>
+            <a href="/login" class="btn btn-outline-light btn-sm">Salir</a>
         </div>
     </div>
+</nav>
 
-    <div th:if="${exito}" class="alert alert-success alert-dismissible fade show">
-        <strong th:text="${exito}"></strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+<div class="container">
+
+    <div th:if="${exito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${exito}">Mensaje de éxito</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <strong th:text="${error}"></strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}">Mensaje de error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">
-            <form action="/web/autos" method="GET" class="d-flex">
-                <input type="text" name="busqueda" class="form-control me-2" placeholder="Buscar Toyota, Mazda..." th:value="${palabraBusqueda}">
-                <button type="submit" class="btn btn-primary">Buscar</button>
-                <a href="/web/autos" class="btn btn-outline-secondary ms-1">Ver Todos</a>
+        <div class="col-md-8">
+            <form class="d-flex" action="/web/autos" method="get">
+                <input class="form-control me-2" type="search" name="busqueda"
+                       placeholder="Buscar por marca o modelo..." th:value="${palabraBusqueda}">
+                <button class="btn btn-primary" type="submit">Buscar 🔍</button>
             </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <a th:if="${usuarioSesion.rol.nombre == 'ADMIN'}" href="/web/autos/nuevo" class="btn btn-success">
+                + Nuevo Auto
+            </a>
         </div>
     </div>
 
-    <table class="table table-hover align-middle">
-        <thead class="table-dark">
-        <tr>
-            <th>Foto</th>
-            <th>Vehículo</th>
-            <th>Precio</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="auto : ${listaAutos}">
-            <td style="width: 140px;">
-                <img th:if="${auto.imagenUrl != null and !auto.imagenUrl.isEmpty()}"
-                     th:src="${auto.imagenUrl}" class="img-thumbnail" style="height: 80px; width: 120px; object-fit: cover;">
-                <span th:unless="${auto.imagenUrl != null and !auto.imagenUrl.isEmpty()}" class="text-muted small">Sin Foto</span>
-            </td>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Imagen</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Placa</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="auto : ${listaAutos}">
+                    <td>
+                        <img th:src="${auto.imagenUrl != null && !auto.imagenUrl.isEmpty() ? auto.imagenUrl : 'https://via.placeholder.com/100'}"
+                             class="auto-img" alt="Foto">
+                    </td>
+                    <td th:text="${auto.marca}">Marca</td>
+                    <td th:text="${auto.modelo}">Modelo</td>
+                    <td th:text="${auto.placa}">Placa</td>
+                    <td class="fw-bold text-success" th:text="'$' + ${auto.precio}">Precio</td>
 
-            <td>
-                <h5 class="mb-0 fw-bold" th:text="${auto.marca} + ' ' + ${auto.modelo}"></h5>
-                <span class="badge bg-light text-dark border" th:text="${auto.placa}"></span>
-            </td>
+                    <td>
+                        <span th:if="${auto.disponible}" class="badge bg-success">Disponible</span>
+                        <span th:unless="${auto.disponible}" class="badge bg-secondary">Vendido</span>
+                    </td>
 
-            <td class="fw-bold text-success fs-5" th:text="'$' + ${auto.precio}"></td>
+                    <td>
+                        <div class="d-flex gap-2">
 
-            <td>
-                <span th:if="${auto.disponible}" class="badge bg-success">Disponible</span>
-                <span th:unless="${auto.disponible}" class="badge bg-danger">Vendido</span>
-            </td>
+                            <div th:if="${auto.disponible}">
+                                <form th:action="@{/web/autos/comprar/{id}(id=${auto.id})}" method="post">
+                                    <input type="hidden" name="_method" value="patch" />
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Comprar 🛒</button>
+                                </form>
+                            </div>
 
-            <td>
-                <div th:if="${session.usuarioSesion.rol.nombre == 'ADMINISTRADOR'}">
-                    <a th:href="@{/web/autos/editar/{id}(id=${auto.id})}" class="btn btn-sm btn-primary">Editar</a>
-                    <a th:href="@{/web/autos/eliminar/{id}(id=${auto.id})}" class="btn btn-sm btn-danger"
-                       onclick="return confirm('¿Eliminar?')">X</a>
-                </div>
+                            <div th:if="${usuarioSesion.rol.nombre == 'ADMIN'}" class="d-flex gap-2">
 
-                <div th:if="${session.usuarioSesion.rol.nombre == 'CLIENTE' and auto.disponible}">
-                    <a th:href="@{/web/autos/comprar/{id}(id=${auto.id})}"
-                       class="btn btn-sm btn-warning fw-bold"
-                       onclick="return confirm('¿Confirmar compra? Se descontará de tu saldo.')">
-                        Comprar Ahora
-                    </a>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                                <a th:href="@{/web/autos/editar/{id}(id=${auto.id})}" class="btn btn-warning btn-sm">✏️</a>
 
-    <div th:if="${listaAutos.empty}" class="alert alert-warning text-center">
-        No se encontraron autos. Intenta otra búsqueda.
+                                <form th:action="@{/web/autos/eliminar/{id}(id=${auto.id})}" method="post">
+                                    <input type="hidden" name="_method" value="delete" />
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('¿Estás seguro de eliminar este auto?');">🗑️</button>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr th:if="${listaAutos.empty}">
+                    <td colspan="7" class="text-center text-muted py-4">
+                        No hay autos registrados o no coinciden con tu búsqueda.
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
