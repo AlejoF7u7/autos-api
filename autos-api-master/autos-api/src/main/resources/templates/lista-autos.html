@@ -5,16 +5,8 @@
     <title>Catálogo de Autos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .auto-img {
-            width: 100px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-        .navbar-custom {
-            background-color: #2c3e50;
-            color: white;
-        }
+        .auto-img { width: 100px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .navbar-custom { background-color: #2c3e50; color: white; }
     </style>
 </head>
 <body>
@@ -24,8 +16,12 @@
         <a class="navbar-brand text-white" href="#">🚗 Concesionario</a>
         <div class="d-flex align-items-center text-white">
             <span class="me-3">Hola, <b th:text="${usuarioSesion.nombre}">Usuario</b></span>
+
             <span class="badge bg-success me-3" th:text="'Saldo: $' + ${usuarioSesion.saldo}">$0.0</span>
-            <span class="badge bg-info text-dark me-3" th:text="${usuarioSesion.rol.nombre}">ROL</span>
+
+            <span class="badge bg-info text-dark me-3"
+                  th:text="${usuarioSesion.rol != null ? usuarioSesion.rol.nombre : 'SIN ROL'}">ROL</span>
+
             <a href="/login" class="btn btn-outline-light btn-sm">Salir</a>
         </div>
     </div>
@@ -44,14 +40,15 @@
 
     <div class="row mb-3">
         <div class="col-md-8">
-            <form class="d-flex" action="/web/autos" method="get">
+            <form class="d-flex" action="/autos" method="get">
                 <input class="form-control me-2" type="search" name="busqueda"
                        placeholder="Buscar por marca o modelo..." th:value="${palabraBusqueda}">
                 <button class="btn btn-primary" type="submit">Buscar 🔍</button>
             </form>
         </div>
         <div class="col-md-4 text-end">
-            <a th:if="${usuarioSesion.rol.nombre == 'ADMIN'}" href="/web/autos/nuevo" class="btn btn-success">
+            <a th:if="${usuarioSesion.rol != null and usuarioSesion.rol.nombre == 'ADMINISTRADOR'}"
+               href="/autos/nuevo" class="btn btn-success">
                 + Nuevo Auto
             </a>
         </div>
@@ -89,19 +86,18 @@
 
                     <td>
                         <div class="d-flex gap-2">
-
                             <div th:if="${auto.disponible}">
-                                <form th:action="@{/web/autos/comprar/{id}(id=${auto.id})}" method="post">
+                                <form th:action="@{/autos/comprar/{id}(id=${auto.id})}" method="post">
                                     <input type="hidden" name="_method" value="patch" />
                                     <button type="submit" class="btn btn-outline-primary btn-sm">Comprar 🛒</button>
                                 </form>
                             </div>
 
-                            <div th:if="${usuarioSesion.rol.nombre == 'ADMIN'}" class="d-flex gap-2">
+                            <div th:if="${usuarioSesion.rol != null and usuarioSesion.rol.nombre == 'ADMINISTRADOR'}" class="d-flex gap-2">
 
-                                <a th:href="@{/web/autos/editar/{id}(id=${auto.id})}" class="btn btn-warning btn-sm">✏️</a>
+                                <a th:href="@{/autos/editar/{id}(id=${auto.id})}" class="btn btn-warning btn-sm">✏️</a>
 
-                                <form th:action="@{/web/autos/eliminar/{id}(id=${auto.id})}" method="post">
+                                <form th:action="@{/autos/eliminar/{id}(id=${auto.id})}" method="post">
                                     <input type="hidden" name="_method" value="delete" />
                                     <button type="submit" class="btn btn-danger btn-sm"
                                             onclick="return confirm('¿Estás seguro de eliminar este auto?');">🗑️</button>
@@ -110,20 +106,16 @@
                         </div>
                     </td>
                 </tr>
-
                 <tr th:if="${listaAutos.empty}">
                     <td colspan="7" class="text-center text-muted py-4">
-                        No hay autos registrados o no coinciden con tu búsqueda.
+                        No hay autos registrados.
                     </td>
                 </tr>
-
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

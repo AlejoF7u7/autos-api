@@ -19,7 +19,7 @@ public class DataInitializer {
                                    AutoRepository autoRepo) {
         return args -> {
 
-            Rol rolAdmin = crearRolSiNoExiste(rolRepo, "ADMIN");
+            Rol rolAdmin = crearRolSiNoExiste(rolRepo, "ADMINISTRADOR");
             Rol rolCliente = crearRolSiNoExiste(rolRepo, "CLIENTE");
 
             if (usuarioRepo.findByEmail("admin@autos.com").isEmpty()) {

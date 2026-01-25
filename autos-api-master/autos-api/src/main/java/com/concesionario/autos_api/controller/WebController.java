@@ -41,7 +41,8 @@ public class WebController {
         Optional<Usuario> usuario = usuarioService.login(email, password);
         if (usuario.isPresent()) {
             model.addAttribute("usuarioSesion", usuario.get());
-            return "redirect:/web/autos";
+            // CORREGIDO: Redirige a /autos (sin /web)
+            return "redirect:/autos";
         } else {
             atributos.addFlashAttribute("error", "Credenciales incorrectas");
             return "redirect:/login";
@@ -66,7 +67,9 @@ public class WebController {
         return "redirect:/login";
     }
 
-    @GetMapping("/web/autos")
+    // --- RUTAS LIMPIAS (SIN /WEB) ---
+
+    @GetMapping("/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
                                  @SessionAttribute(name = "usuarioSesion", required = false) Usuario usuario,
                                  Model model) {
@@ -74,10 +77,7 @@ public class WebController {
         if (usuario == null) return "redirect:/login";
 
         Optional<Usuario> usuarioDb = usuarioRepository.findById(usuario.getId());
-
-        if (usuarioDb.isEmpty()) {
-            return "redirect:/login";
-        }
+        if (usuarioDb.isEmpty()) return "redirect:/login";
 
         Usuario usuarioActualizado = usuarioDb.get();
         model.addAttribute("usuarioSesion", usuarioActualizado);
@@ -91,23 +91,23 @@ public class WebController {
         return "lista-autos";
     }
 
-    @GetMapping("/web/autos/nuevo")
+    @GetMapping("/autos/nuevo")
     public String crearAuto(Model model) {
         model.addAttribute("auto", new Auto());
         return "formulario-auto";
     }
 
-    @GetMapping("/web/autos/editar/{id}")
+    @GetMapping("/autos/editar/{id}")
     public String editarAuto(@PathVariable Long id, Model model) {
         Optional<Auto> auto = autoService.obtenerPorId(id);
         if (auto.isPresent()) {
             model.addAttribute("auto", auto.get());
             return "formulario-auto";
         }
-        return "redirect:/web/autos";
+        return "redirect:/autos";
     }
 
-    @PostMapping("/web/autos/guardar")
+    @PostMapping("/autos/guardar")
     public String guardarAutoWeb(@Valid @ModelAttribute Auto auto, BindingResult result, Model model) {
         if (result.hasErrors()) return "formulario-auto";
         if(auto.getDisponible() == null) auto.setDisponible(true);
@@ -117,16 +117,18 @@ public class WebController {
             model.addAttribute("errorNegocio", e.getMessage());
             return "formulario-auto";
         }
-        return "redirect:/web/autos";
+        // CORREGIDO: Redirige a /autos
+        return "redirect:/autos";
     }
 
-    @DeleteMapping("/web/autos/eliminar/{id}")
+    @DeleteMapping("/autos/eliminar/{id}")
     public String eliminarAutoWeb(@PathVariable Long id) {
         autoService.eliminarAuto(id);
-        return "redirect:/web/autos";
+        // CORREGIDO: Redirige a /autos
+        return "redirect:/autos";
     }
 
-    @PatchMapping("/web/autos/comprar/{id}")
+    @PatchMapping("/autos/comprar/{id}")
     public String comprarAutoWeb(@PathVariable Long id,
                                  @SessionAttribute("usuarioSesion") Usuario usuario,
                                  RedirectAttributes atributos) {
@@ -136,6 +138,7 @@ public class WebController {
         } catch (Exception e) {
             atributos.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/web/autos";
+        // CORREGIDO: Redirige a /autos
+        return "redirect:/autos";
     }
 }
