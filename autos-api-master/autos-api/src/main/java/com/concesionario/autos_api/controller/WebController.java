@@ -66,7 +66,7 @@ public class WebController {
         return "redirect:/login";
     }
 
-    // --- RUTAS PROTEGIDAS Y LIMPIAS ---
+
 
     @GetMapping("/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
@@ -80,8 +80,7 @@ public class WebController {
 
         Usuario usuarioActualizado = usuarioDb.get();
 
-        // 🚨 CINTURÓN DE SEGURIDAD ANT-ERROR 500 🚨
-        // Si por alguna razón el usuario en BD no tiene rol, lo sacamos para evitar la pantalla blanca
+
         if (usuarioActualizado.getRol() == null) {
             return "redirect:/login";
         }
