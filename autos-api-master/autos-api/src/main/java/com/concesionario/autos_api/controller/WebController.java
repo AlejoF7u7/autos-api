@@ -31,6 +31,7 @@ public class WebController {
     }
 
 
+
     @GetMapping("/")
     public String inicio() { return "redirect:/login"; }
 
@@ -61,22 +62,32 @@ public class WebController {
             atributos.addFlashAttribute("error", "El correo ya existe.");
             return "redirect:/registro";
         }
-        // Lógica de registro simplificada para el ejemplo
         usuario.setSaldo(60000.0);
-        // Asegúrate de asignar rol aquí si es necesario
         usuarioService.registrarUsuario(usuario);
         atributos.addFlashAttribute("exito", "Cuenta creada. Saldo inicial: $60,000.");
         return "redirect:/login";
     }
 
 
+
     @GetMapping("/web/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
                                  @SessionAttribute(name = "usuarioSesion", required = false) Usuario usuario,
                                  Model model) {
+
         if (usuario == null) return "redirect:/login";
 
-        Usuario usuarioActualizado = usuarioRepository.findById(usuario.getId()).get();
+
+
+        Optional<Usuario> usuarioDb = usuarioRepository.findById(usuario.getId());
+
+        if (usuarioDb.isEmpty()) {
+
+            return "redirect:/login";
+        }
+
+
+        Usuario usuarioActualizado = usuarioDb.get();
         model.addAttribute("usuarioSesion", usuarioActualizado);
 
         if (busqueda != null && !busqueda.isEmpty()) {
