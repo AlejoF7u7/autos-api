@@ -1,6 +1,7 @@
 package com.concesionario.autos_api.controller;
 
 import com.concesionario.autos_api.model.Auto;
+import com.concesionario.autos_api.model.Rol; // Importante
 import com.concesionario.autos_api.model.Usuario;
 import com.concesionario.autos_api.repository.RolRepository;
 import com.concesionario.autos_api.repository.UsuarioRepository;
@@ -22,12 +23,15 @@ public class WebController {
     private final AutoService autoService;
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository; // 1. AQUI FALTABA DECLARAR ESTO
 
+    // Constructor actualizado
     public WebController(AutoService autoService, UsuarioService usuarioService,
                          RolRepository rolRepository, UsuarioRepository usuarioRepository) {
         this.autoService = autoService;
         this.usuarioService = usuarioService;
         this.usuarioRepository = usuarioRepository;
+        this.rolRepository = rolRepository; // 2. AQUI FALTABA ASIGNARLO
     }
 
     @GetMapping("/")
@@ -39,7 +43,13 @@ public class WebController {
     @PostMapping("/login-web")
     public String procesarLogin(@RequestParam String email, @RequestParam String password, Model model, RedirectAttributes atributos) {
         Optional<Usuario> usuario = usuarioService.login(email, password);
+
+
         if (usuario.isPresent()) {
+            if (usuario.get().getRol() == null) {
+                atributos.addFlashAttribute("error", "Error: Tu usuario no tiene un rol asignado. Contacta soporte.");
+                return "redirect:/login";
+            }
             model.addAttribute("usuarioSesion", usuario.get());
             return "redirect:/autos";
         } else {
@@ -54,19 +64,31 @@ public class WebController {
         return "registro";
     }
 
+
     @PostMapping("/registro")
     public String procesarRegistro(@ModelAttribute Usuario usuario, RedirectAttributes atributos) {
+
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             atributos.addFlashAttribute("error", "El correo ya existe.");
             return "redirect:/registro";
         }
+
+        Optional<Rol> rolCliente = rolRepository.findByNombre("CLIENTE");
+
+        if (rolCliente.isEmpty()) {
+            atributos.addFlashAttribute("error", "Error del sistema: No existe el rol CLIENTE en la base de datos.");
+            return "redirect:/registro";
+        }
+
+
+        usuario.setRol(rolCliente.get());
         usuario.setSaldo(60000.0);
+
         usuarioService.registrarUsuario(usuario);
-        atributos.addFlashAttribute("exito", "Cuenta creada. Saldo inicial: $60,000.");
+
+        atributos.addFlashAttribute("exito", "Cuenta creada exitosamente. Saldo inicial: $60,000.");
         return "redirect:/login";
     }
-
-
 
     @GetMapping("/autos")
     public String listarAutosWeb(@RequestParam(required = false) String busqueda,
@@ -79,7 +101,6 @@ public class WebController {
         if (usuarioDb.isEmpty()) return "redirect:/login";
 
         Usuario usuarioActualizado = usuarioDb.get();
-
 
         if (usuarioActualizado.getRol() == null) {
             return "redirect:/login";
